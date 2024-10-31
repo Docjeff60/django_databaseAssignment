@@ -1,16 +1,16 @@
 from django.contrib import admin
-from .models import Student, Program, StudentProfile, CohortGroup
+from .models import Student, Program, Student_profile, CohortGroup
 
 # Register your models here.
 
 
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-  list_display = ['username', 'first_name', 'last_name', 'status']
+  list_display = ['username', 'first_name', 'last_name', 'status', 'student_type']
 
-@admin.register(StudentProfile)
+@admin.register(Student_profile)
 class profileAdmin(admin.ModelAdmin):
-  list_display = ['student','bio','date_of_birth','address','rating','profile_picture','date_join',]
+  list_display = ['student','bio','date_of_birth','address','rating','profile_picture','date_join']
 
 @admin.register(Program)
 class ProgramAdmin(admin.ModelAdmin):

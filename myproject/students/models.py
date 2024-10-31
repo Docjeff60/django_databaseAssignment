@@ -3,15 +3,26 @@ from django.db import models
 # Create your models here.
 
 
+student_type = [
+  ('leader', 'cohort leader'),
+  ('deputy', 'vice leader'),
+  ('Secretary', 'Secretary'),
+  ('President', 'President'),
+  ('member', 'member'),
+]
+
 class Student(models.Model):
   username = models.CharField(max_length=100)
   first_name = models.CharField(max_length=200)
   last_name = models.CharField(max_length=200)
   status = models.BooleanField(default=True)
+  student_type = models.CharField(max_length=100, choices=student_type, default='member')
+
   def str(self):
     return f"{self.first_name} {self.last_name}"
 
-class StudentProfile(models.Model):
+
+class Student_profile(models.Model):
   student = models.OneToOneField(Student, on_delete=models.CASCADE)
   bio = models.TextField()
   date_of_birth = models.DateField()
@@ -22,6 +33,7 @@ class StudentProfile(models.Model):
 
   def str(self):
     return f"{self.student.username}"
+
 
 class Program(models.Model):
   courses = models.CharField(max_length=500)
