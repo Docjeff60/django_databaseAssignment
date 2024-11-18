@@ -1,6 +1,5 @@
 {% load static %}
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,8 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/index.css' %}">
-   
+    <link rel="stylesheet" href="{% static 'index.css' %}">
 </head>
 <body>
 
@@ -21,15 +19,15 @@
         <p>Your one-stop solution for managing exams and scores.</p>
     </header>
 
+    <!-- Filter Section -->
     <section class="filter-section py-3 bg-light">
         <div class="container text-end">
-            <!-- Button to trigger modal -->
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">Add Now</button>
         </div>
     </section>
 
+    <!-- Student Table Section -->
     <section class="container mt-5">
-        <!-- Table -->
         <div class="table-responsive">
             <table class="table align-middle table-bordered table-hover mt-4">
                 <thead class="table-dark">
@@ -39,74 +37,108 @@
                         <th>Cohort</th>
                         <th>Program</th>
                         <th>Status</th>
+                        <th>Date Joined</th>
                         <th>Rating</th>
+                        <th>Student Type</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
-                {% comment %} <tbody>
-                    <tr> 
-                        <td><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMS3wbH84PsWS_j9jQ9r7UsHCw88OOlF-UCQ&s" alt="Profile" width="80" height="80" class="rounded-circle"></td>
-                        <td>Kajal Sharma</td>
-                        <td>Cohort 1</td>
-                        <td>Software Engineering</td>
-                        <td><span class="badge bg-success text-white">Online Exam</span></td>
-                        <td>2024-01-15</td>
-                        <td>4.5</td>
+                <tbody>
+                    {% for eachstudent in student %}
+                    <tr>
+                        {% comment %} Profile image {% endcomment %}
                         <td>
-                            <a href="{% url "studentabout" %}" class="btn btn-sm btn-outline-primary">
+                            {% if eachstudent.student_profile.profile_picture %}
+                                <img src="{{ eachstudent.student_profile.profile_picture.url }}" alt="{{ eachstudent.first_name }}" width="80" height="80" class="rounded-circle" />
+                            {% else %}
+                                <img src="https://images.search.yahoo.com/search/images?p=dummy+image&fr=mcafee&type=E210US91105G0&imgurl=https%3A%2F%2Fpixy.org%2Fsrc%2F31%2F315160.png#id=4&iurl=https%3A%2F%2Fpixy.org%2Fsrc%2F31%2F315160.png&action=click" alt="Profile" width="80" height="80" class="rounded-circle">
+                            {% endif %}
+                        </td>
+
+                        {% comment %} Name {% endcomment %}
+                        <td>{{ eachstudent.first_name }} {{ eachstudent.last_name }}</td>
+                        
+                        {% comment %} Cohort name {% endcomment %}
+                        <td>
+                            {% for cohort in eachstudent.cohortgroup_set.all %}
+                               {{ cohort.name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </td>
+                        
+                        {% comment %} Program {% endcomment %}
+                       {% if eachstudent.program_set.exists %}
+                            {% for program in eachstudent.program_set.all %}
+                            <td>{{ program.courses }}</td>
+                            {% endfor %}
+
+                            {% else %}
+                            <td>No course</td>
+                        {% endif %}
+                       
+                    {% comment %} Status {% endcomment %}
+                        <td><span class="badge bg-success text-white">
+                            {{eachstudent.status|yesno:'active,inactive'}}
+                        </span></td>
+                        
+                    {% comment %} Date joined {% endcomment %}
+                        <td>{{ eachstudent.student_profile.date_join|date:"M-j-Y" }}</td>
+                    
+                    {% comment %} Rating {% endcomment %}
+                        {% if eachstudent.student_profile.rating%}
+                            <td class="text-success">{{ eachstudent.student_profile.rating }}</td>
+                        {% else %}
+                            <td class="text-danger">0.0</td>
+                        {% endif %}    
+
+                    {% comment %} student type {% endcomment %}
+                        <td><span class="badge bg-primary text-white">
+                            {{eachstudent.student_type}}
+                        </span></td>
+
+                        <td>
+                            <a href="{% url 'student_detail' eachstudent.id %}" class="btn btn-sm btn-outline-primary">
                                 <i class="fas fa-eye"></i> View
                             </a>
                         </td>
                     </tr>
-
-                </tr> {% endcomment %}
-
-                <tbody>
-                    {% for student in students %}
+                    {% empty %}
                     <tr>
-                        <td>
-                            <img src="{{student.student_profile.profile_picture.url}}" alt="Profile" width="80" height="80" class="rounded-circle">
-                        </td>
-                        
-                        <td>
-                            {{ student.first_name }} {{ student.last_name }}
-                        </td>
-                        
-                        <td>
-                            {% for cohort in student.cohortgroup_set.all %}
-                                {{ cohort.name }}{% if not forloop.last %}, {% endif %}
-                            {% endfor %}
-                        </td>
-                        
-                        <td>
-                            {% for program in student.program_set.all %}
-                                {{ program.courses }}{% if not forloop.last %}, {% endif %}
-                            {% endfor %}
-                        </td>
-                        
-                        <td>
-                            <span class="badge bg-success text-white">Online Exam</span>
-                        </td>
-                        
-                        {% comment %} <td>
-                            {{ student.Student_profile.date_join|date:'Y-m-d' }}
-                        </td> {% endcomment %}
-                        
-                        <td>{{ student.student_profile.rating }}</td>
-
-                        {% comment %} <td>{{ student.Student_profile.student_type }}</td> {% endcomment %}
-                        
-                        <td>
-                            <a href="{% url 'studentabout' %}" class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-eye"></i> View
-                            </a>
-                        </td>
+                        <td colspan="8" class="text-center">No students available.</td>
                     </tr>
                     {% endfor %}
-            
-                    <!-- Add more rows as needed -->
                 </tbody>
             </table>
+
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    {% if student.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{student.previous_page_number}}">
+                                {{student.previous_page_number}}
+                            </a>
+                        </li>
+
+                        {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="#">{{student.number}}</a>
+                        </li>
+                        {% endif %}
+
+                        {% if student.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?={{student.next_page_number}}">{{student.next_page_number}}</a>
+                        </li>
+                        
+                        {% endif %}
+                        
+                        {% comment %} <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li> {% endcomment %}
+                    
+                </ul>
+              </nav>
+
         </div>
     </section>
 

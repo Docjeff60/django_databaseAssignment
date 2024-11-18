@@ -10,7 +10,7 @@ class StudentAdmin(admin.ModelAdmin):
 
 @admin.register(Student_profile)
 class profileAdmin(admin.ModelAdmin):
-  list_display = ['student','bio','date_of_birth','address','rating','profile_picture','date_join']
+  list_display = ['student','bio','date_of_birth','address','rating','profile_picture']
 
 @admin.register(Program)
 class ProgramAdmin(admin.ModelAdmin):
